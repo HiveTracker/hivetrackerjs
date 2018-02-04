@@ -3,6 +3,7 @@ window.addEventListener('load', () => {
 
 	var button = document.getElementsByTagName('button')[0];
 	var input = document.getElementsByTagName('input')[0];
+ 	var output = document.getElementsByTagName('div')[0];
 
 	var txCharacteristic;
 
@@ -48,6 +49,7 @@ window.addEventListener('load', () => {
 				console.log("HT> Sending "+ input.value);
 				txCharacteristic.writeValue(str2ab(input.value)).then(function() {
 					console.log("HT> Sent");
+					input.value = "";
 				});
 			}
 		}
@@ -80,6 +82,7 @@ window.addEventListener('load', () => {
 				rxCharacteristic.addEventListener('characteristicvaluechanged', function(event) {
 		        var value = event.target.value.buffer;
 		        console.log("HT> " +  event.timeStamp + " RX:"+ab2str(value));
+		        output.innerHTML += "<p>" + ab2str(value) + "</p>";
 		        receiveCallback({"timeStamp": event.timeStamp, "value": value});
 		      });
 				return rxCharacteristic.startNotifications();
