@@ -27,6 +27,10 @@ Ubuntu 16.04 users must update Bluez, the following tutorial should help:
 
 https://acassis.wordpress.com/2016/06/28/how-to-get-chrome-web-bluetooth-working-on-linux/
 
+...and don't forget to enable the "Experimental Web Platform features":
+
+    chrome://flags/#enable-experimental-web-platform-features
+
 
 If everything works, you should be able to see a counter once connected to your BLE device with this interface:
 
