@@ -22,11 +22,12 @@ And using your freshly improved arduino IDE, install the example in the "HT_seri
 #### Software
 
 It requires Chrome (or chromium), and works on almost any OS (android too).
-
+The minimum requirements are listed here:
+https://github.com/WebBluetoothCG/web-bluetooth/blob/master/implementation-status.md#notes
 
 ##### Ubuntu 16.04 users
 
-You must update Bluez, the following tutorial should help:
+You must update Bluez, the following tutorial should help, but use the version *5.43* (the new ones are missing useful tools):
 
 https://acassis.wordpress.com/2016/06/28/how-to-get-chrome-web-bluetooth-working-on-linux/
 
@@ -34,7 +35,7 @@ If it's the 1st time you're using BLE devices with your linux machine, you might
 
     hciconfig
 
-If it's off, this command should allow turning it on:
+If it's off, you might want to make sure that `bluetoothd` is started at boot, but this command should allow turning it on:
 
     sudo hciconfig hci0 up
 
