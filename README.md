@@ -35,9 +35,15 @@ If it's the 1st time you're using BLE devices with your linux machine, you might
 
     hciconfig
 
-If it's off, you might want to make sure that `bluetoothd` is started at boot, but this command should allow turning it on:
+If it's off, you might want to make sure that `bluetoothd` is started at boot, this tuto should help:
+
+https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
+
+...but this command should allow turning it on at least once:
 
     sudo hciconfig hci0 up
+    
+
 
 ...and don't forget to enable the "Experimental Web Platform features":
 
