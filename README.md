@@ -15,7 +15,7 @@ First, install the following environment:
 
 https://github.com/sandeepmistry/arduino-nRF5
 
-And using your freshly improved arduino IDE, install the example in the "HT_serial" folder.
+And using your freshly improved arduino IDE, install the example in the "firmware" folder.
 
 
 
@@ -42,7 +42,7 @@ https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-
 ...but this command should allow turning it on at least once:
 
     sudo hciconfig hci0 up
-    
+
 
 
 ...and don't forget to enable the "Experimental Web Platform features":
@@ -54,5 +54,5 @@ https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-
 
 If everything works, you should be able to see a counter once connected to your BLE device with this interface:
 
-https://hivetracker.github.io/hivetrackerjs
+https://hivetracker.github.io/hivetrackerjs/webBLE
 
