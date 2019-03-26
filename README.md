@@ -2,7 +2,7 @@
 
 ### What?
 
-This repo is a Web Bluetooth test using simple Serial-like communication.
+This repo contains a simulation and a Web Bluetooth test using simple Serial-like communication.
 
 To try it, install the following in your computer and BLE device.
 
@@ -15,7 +15,7 @@ First, install the following environment:
 
 https://github.com/sandeepmistry/arduino-nRF5
 
-And using your freshly improved arduino IDE, install the example in the "HT_serial" folder.
+And using your freshly improved arduino IDE, install the example in the "firmware" folder.
 
 
 
@@ -24,6 +24,11 @@ And using your freshly improved arduino IDE, install the example in the "HT_seri
 It requires Chrome (or chromium), and works on almost any OS (android too).
 The minimum requirements are listed here:
 https://github.com/WebBluetoothCG/web-bluetooth/blob/master/implementation-status.md#notes
+
+##### Windows users
+
+TODO
+
 
 ##### Ubuntu 16.04 users
 
@@ -42,7 +47,7 @@ https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-
 ...but this command should allow turning it on at least once:
 
     sudo hciconfig hci0 up
-    
+
 
 
 ...and don't forget to enable the "Experimental Web Platform features":
@@ -54,5 +59,5 @@ https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-
 
 If everything works, you should be able to see a counter once connected to your BLE device with this interface:
 
-https://hivetracker.github.io/hivetrackerjs
+https://hivetracker.github.io/hivetrackerjs/webBLE
 
