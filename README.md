@@ -2,7 +2,7 @@
 
 ### What?
 
-This repo is a Web Bluetooth test using simple Serial-like communication.
+This repo contains a simulation and a Web Bluetooth test using simple Serial-like communication.
 
 To try it, install the following in your computer and BLE device.
 
@@ -24,6 +24,11 @@ And using your freshly improved arduino IDE, install the example in the "firmwar
 It requires Chrome (or chromium), and works on almost any OS (android too).
 The minimum requirements are listed here:
 https://github.com/WebBluetoothCG/web-bluetooth/blob/master/implementation-status.md#notes
+
+##### Windows users
+
+TODO
+
 
 ##### Ubuntu 16.04 users
 
