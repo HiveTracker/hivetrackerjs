@@ -56,6 +56,7 @@ window.addEventListener('load', () => {
 	});
 
 	button.addEventListener('click', () => {
+		var lineBuffer = "";
 		navigator.bluetooth.requestDevice({
 			filters: filters,
 		  optionalServices: services}).then(function(device) {
@@ -79,12 +80,19 @@ window.addEventListener('load', () => {
 			}).then(function (characteristic) {
 				rxCharacteristic = characteristic;
 				console.log("HT> RX characteristic:"+JSON.stringify(rxCharacteristic));
-				rxCharacteristic.addEventListener('characteristicvaluechanged', function(event) {
-		        var value = event.target.value.buffer;
-		        console.log("HT> " +  event.timeStamp + " RX:"+ab2str(value));
-		        output.innerHTML += "<p>" + ab2str(value) + "</p>";
-		        receiveCallback({"timeStamp": event.timeStamp, "value": value});
-		      });
+				rxCharacteristic.addEventListener('characteristicvaluechanged', function (event) {
+					var value = event.target.value.buffer;
+					var text = ab2str(value).split('\n');
+					lineBuffer = lineBuffer.concat(text[0]);
+					if (text.length > 1)
+					{
+						console.log("HT> " + event.timeStamp + " RX:" + lineBuffer);
+						output.innerHTML += "<p>" + lineBuffer + "</p>";
+						lineBuffer = text[1];
+					}
+
+					receiveCallback({ "timeStamp": event.timeStamp, "value": value });
+				});
 				return rxCharacteristic.startNotifications();
 			}).then(function() {
 				return btService.getCharacteristic(NORDIC_TX);
