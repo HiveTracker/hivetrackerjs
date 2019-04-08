@@ -2,6 +2,7 @@ window.addEventListener('load', () => {
 	console.log("Hello world");
 
 	var button = document.getElementsByTagName('button')[0];
+	var stop = document.getElementsByTagName('button')[1];
 	var input = document.getElementsByTagName('input')[0];
  	var output = document.getElementsByTagName('div')[0];
 
@@ -64,9 +65,12 @@ window.addEventListener('load', () => {
 				deviceName = device.name;
 				console.log('HT>  Device Name:       ' + device.name);
 				console.log('HT>  Device ID:         ' + device.id);
+				stop.addEventListener('click', () => {
+					console.log("HT> Disconnect (stop!)");
+					device.gatt.disconnect();
+				}, {once:true});
 				device.addEventListener('gattserverdisconnected', function() {
 					console.log("HT> Disconnected (gattserverdisconnected)");
-					closeSerial();
 				}, {once:true});
 				return device.gatt.connect();
 			}).then(function(server) {
