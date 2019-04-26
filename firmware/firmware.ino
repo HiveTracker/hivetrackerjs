@@ -2,7 +2,7 @@
 #include <BLEPeripheral.h>
 #include "BLESerial.h"
 
-#define BLE_NAME             "HT mini"
+#define BLE_NAME             "HT-UART"
 #define PIN_SERIAL_RX        (25) /* J4 - E */
 #define PIN_SERIAL_TX        (27) /* J4 - D */
 
@@ -10,53 +10,52 @@ BLESerial bleSerial;
 
 
 void setup() {
-    bleSerial.setLocalName(BLE_NAME);
-    bleSerial.setDeviceName(BLE_NAME);
-
     Serial.setPins(PIN_SERIAL_RX, PIN_SERIAL_TX);
-    Serial.begin(115200);
+    Serial.begin(115200 * 2);
     Serial.println("UART OK");
 
+    bleSerial.setLocalName(BLE_NAME);
+    bleSerial.setDeviceName(BLE_NAME);
     bleSerial.begin();
-    bleSerial.print("BLE OK - device name");
-    bleSerial.println(BLE_NAME);
 }
 
 void loop() {
+    const float refresh_period_us = 1000 * 1000/120.; // 120Hz => 8.3 ms
+    static float timestamp_us = 0;
+
     bleSerial.poll();
 
-    forward();
-    loopback();
-    spam();
-}
-
-
-// forward received from Serial to BLESerial and vice versa
-void forward() {
-    if (bleSerial && Serial) {
-        int byte;
-        while ((byte = bleSerial.read()) > 0) Serial.write((char)byte);
-        while ((byte = Serial.read()) > 0) bleSerial.write((char)byte);
+    if (micros() - timestamp_us > refresh_period_us) {
+        timestamp_us = micros();
+        data_tx_simulation();
     }
 }
 
-// echo all received data back
-void loopback() {
-    if (bleSerial && Serial) {
-        int byte;
-        while ((byte = bleSerial.read()) > 0) bleSerial.write(byte);
-        while ((byte = Serial.read()) > 0) Serial.write((char)byte);
-    }
-}
+// Simulate sending data to check if we lose packets
+void data_tx_simulation() {
+    static int base_axis = 0;
+    static int centroid = 0;
 
-// periodically sent time stamps
-void spam() {
-    int time = millis() / 1000;
+    Serial.write(0xFF);
+    Serial.write(0xFF);
 
-    if (bleSerial && Serial) {
-        bleSerial.println(time);
-        Serial.println(time);
-        delay(1000);
+    // simulate 2 bases x 2 directions
+    if (bleSerial) bleSerial.write((  base_axis) % 4);
+                      Serial.write((++base_axis) % 4);
+
+    // simulate time stamps that make no sense but should increment
+    // it should be 8 bytes (4 timings on 2 bytes each)
+    for (int i = 0; i < 4; i++) {
+        Serial.write((centroid >> 0) & 0xFF);
+        Serial.write((centroid >> 8) & 0xFF);
+
+        if (bleSerial) {
+            bleSerial.write((centroid >> 0) & 0xFF);
+            bleSerial.write((centroid >> 8) & 0xFF);
+        }
     }
+    centroid++;
+
+    if (bleSerial) bleSerial.write('\n');
 }
 
