@@ -58,7 +58,7 @@ window.addEventListener('load', () => {
 
 	button.addEventListener('click', () => {
 		var lineBuffer = "";
-		var byteBuffer = "";
+		var byteBuffer = [];
 		navigator.bluetooth.requestDevice({
 			filters: filters,
 		  optionalServices: services}).then(function(device) {
@@ -69,10 +69,10 @@ window.addEventListener('load', () => {
 				stop.addEventListener('click', () => {
 					console.log("HT> Disconnect (stop!)");
 					device.gatt.disconnect();
-
+					var data = byteBuffer.map(x => ab2str(x)).join("");
 					var link = document.createElement('a');
 					link.download = 'data.json';
-					var blob = new Blob([byteBuffer], {type: 'text/plain'});
+					var blob = new Blob([data], {type: 'text/plain'});
 					link.href = window.URL.createObjectURL(blob);
 					link.click();
 				}, {once:true});
@@ -92,17 +92,8 @@ window.addEventListener('load', () => {
 				rxCharacteristic = characteristic;
 				console.log("HT> RX characteristic:"+JSON.stringify(rxCharacteristic));
 				rxCharacteristic.addEventListener('characteristicvaluechanged', function (event) {
-					var value = ab2str(event.target.value.buffer);
-					var text = value.split('\n');
-					byteBuffer += value;
-					lineBuffer = lineBuffer.concat(text[0]);
-					if (text.length > 1)
-					{
-						console.log("HT> " + event.timeStamp + " RX:" + lineBuffer);
-						output.innerHTML += "<p>" + lineBuffer + "</p>";
-						lineBuffer = text[1];
-					}
-
+					var value = event.target.value.buffer;
+					byteBuffer.push(value);
 					receiveCallback({ "timeStamp": event.timeStamp, "value": event.target.value });
 				});
 				return rxCharacteristic.startNotifications();
