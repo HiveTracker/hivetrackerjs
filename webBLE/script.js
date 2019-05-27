@@ -56,6 +56,16 @@ window.addEventListener('load', () => {
 		}
 	});
 
+	function concatenate(buf) {
+		return buf.reduce(function (c, x, i) {
+			if (i == 0) return c;
+			var tmp = new Uint8Array(c.byteLength + x.byteLength);
+			tmp.set(new Uint8Array(c), 0);
+			tmp.set(new Uint8Array(x), c.byteLength);
+			return tmp.buffer;
+		}, buf[0]);
+	}
+
 	button.addEventListener('click', () => {
 		var lineBuffer = "";
 		var byteBuffer = [];
@@ -69,10 +79,10 @@ window.addEventListener('load', () => {
 				stop.addEventListener('click', () => {
 					console.log("HT> Disconnect (stop!)");
 					device.gatt.disconnect();
-					var data = byteBuffer.map(x => ab2str(x)).join("");
+					var data = concatenate(byteBuffer);
 					var link = document.createElement('a');
 					link.download = 'data.json';
-					var blob = new Blob([data], {type: 'text/plain'});
+					var blob = new Blob([data], {type: 'application/octet-stream'});
 					link.href = window.URL.createObjectURL(blob);
 					link.click();
 				}, {once:true});
