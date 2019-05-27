@@ -42,8 +42,8 @@ void data_tx_simulation() {
     // simulate time stamps that make no sense but should increment
     // it should be 8 bytes (4 timings on 2 bytes each)
     for (int i = 0; i < 4; i++) {
-        message[i * 2 + 2] = (centroid >> 0) & 0xFF;
-        message[i * 2 + 3] = (centroid >> 8) & 0xFF;
+        message[i * 2 + 2] = (centroid >> 8) & 0xFF;
+        message[i * 2 + 3] = (centroid >> 0) & 0xFF;
         message[1] += centroid & 0xFF;
     }
 
