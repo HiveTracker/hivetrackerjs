@@ -131,7 +131,7 @@ window.addEventListener('load', () => {
 								continue;
 							}
 						}
-						else if (byteIndex % 2 != 0) checksum += element;
+						else if (byteIndex % 2 != 0) checksum = (checksum + element) % 256;
 
 						byteBuffer[byteIndex++] = element;
 						if (byteIndex >= 10) {
