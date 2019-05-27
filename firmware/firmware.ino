@@ -6,8 +6,8 @@
 #define PIN_SERIAL_RX        (25) /* J4 - E */
 #define PIN_SERIAL_TX        (27) /* J4 - D */
 
+byte message[10];
 BLESerial bleSerial;
-
 
 void setup() {
     Serial.setPins(PIN_SERIAL_RX, PIN_SERIAL_TX);
@@ -16,6 +16,7 @@ void setup() {
 
     bleSerial.setLocalName(BLE_NAME);
     bleSerial.setDeviceName(BLE_NAME);
+    bleSerial.setConnectionInterval(0x0006,0x0006);
     bleSerial.begin();
 }
 
@@ -34,28 +35,23 @@ void loop() {
 // Simulate sending data to check if we lose packets
 void data_tx_simulation() {
     static int base_axis = 0;
-    static int centroid = 0;
+    static int centroid = 0x1717;
 
-    Serial.write(0xFF);
-    Serial.write(0xFF);
-
-    // simulate 2 bases x 2 directions
-    if (bleSerial) bleSerial.write((  base_axis) % 4);
-                      Serial.write((++base_axis) % 4);
-
+    message[0] = (++base_axis) % 4;
+    message[1] = 0;
     // simulate time stamps that make no sense but should increment
     // it should be 8 bytes (4 timings on 2 bytes each)
     for (int i = 0; i < 4; i++) {
-        Serial.write((centroid >> 0) & 0xFF);
-        Serial.write((centroid >> 8) & 0xFF);
-
-        if (bleSerial) {
-            bleSerial.write((centroid >> 0) & 0xFF);
-            bleSerial.write((centroid >> 8) & 0xFF);
-        }
+        message[i * 2 + 2] = (centroid >> 0) & 0xFF;
+        message[i * 2 + 3] = (centroid >> 8) & 0xFF;
+        message[1] += centroid & 0xFF;
     }
-    centroid++;
 
-    if (bleSerial) bleSerial.write('\n');
+    // set the high-bits and metadata on message separator (base/axis + checksum)
+    message[0] = 0x80 | (message[0] << 5) & 0x60 | (message[1] >> 4) & 0x0F;
+    message[1] = 0x80 | (message[1] >> 0) & 0x0F;
+    if (bleSerial)
+        bleSerial.write(message, 10);
+    else
+        Serial.write(message, 10);
 }
-
