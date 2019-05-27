@@ -1,3 +1,20 @@
+var HT_PACKAGE_MASK = 0x80;
+var HT_BASE_MASK = 0x40;
+var HT_AXIS_MASK = 0x20;
+var HT_CHECKSUM_MASK = 0x0F;
+
+function Message(buffer, checksum) {
+	this.base = buffer[0] & HT_BASE_MASK;
+	this.axis = buffer[0] & HT_AXIS_MASK;
+	this.centroid = [
+		buffer[2] << 8 | buffer[3],
+		buffer[4] << 8 | buffer[5],
+		buffer[6] << 8 | buffer[7],
+		buffer[8] << 8 | buffer[9]];
+	var chk = (buffer[0] & HT_CHECKSUM_MASK) << 4 | (buffer[1] & HT_CHECKSUM_MASK)
+	this.valid = checksum == chk;
+}
+
 window.addEventListener('load', () => {
 	console.log("Hello world");
 
@@ -67,8 +84,11 @@ window.addEventListener('load', () => {
 	}
 
 	button.addEventListener('click', () => {
+		var checksum = 0;
+		var byteIndex = 0;
 		var lineBuffer = "";
-		var byteBuffer = [];
+		var packetBuffer = [];
+		var byteBuffer = new Uint8Array(new ArrayBuffer(10));
 		navigator.bluetooth.requestDevice({
 			filters: filters,
 		  optionalServices: services}).then(function(device) {
@@ -79,7 +99,7 @@ window.addEventListener('load', () => {
 				stop.addEventListener('click', () => {
 					console.log("HT> Disconnect (stop!)");
 					device.gatt.disconnect();
-					var data = concatenate(byteBuffer);
+					var data = concatenate(packetBuffer);
 					var link = document.createElement('a');
 					link.download = 'data.json';
 					var blob = new Blob([data], {type: 'application/octet-stream'});
@@ -102,8 +122,27 @@ window.addEventListener('load', () => {
 				rxCharacteristic = characteristic;
 				console.log("HT> RX characteristic:"+JSON.stringify(rxCharacteristic));
 				rxCharacteristic.addEventListener('characteristicvaluechanged', function (event) {
-					var value = event.target.value.buffer;
-					byteBuffer.push(value);
+					var value = new Uint8Array(event.target.value.buffer);
+					for (let i = 0; i < value.length; i++) {
+						const element = value[i];
+						if (byteIndex < 2) {
+							if ((element & HT_PACKAGE_MASK) == 0) {
+								byteIndex = 0;
+								continue;
+							}
+						}
+						else if (byteIndex % 2 != 0) checksum += element;
+
+						byteBuffer[byteIndex++] = element;
+						if (byteIndex >= 10) {
+							packetBuffer.push(byteBuffer);
+							message = new Message(byteBuffer, checksum);
+							byteBuffer = new Uint8Array(new ArrayBuffer(10));
+							byteIndex = 0;
+							checksum = 0;
+						}
+					}
+
 					receiveCallback({ "timeStamp": event.timeStamp, "value": event.target.value });
 				});
 				return rxCharacteristic.startNotifications();
