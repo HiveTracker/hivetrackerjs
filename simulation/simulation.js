@@ -18,51 +18,6 @@ var d2m00, d2m01, d2m10, d2m11;
 var d3m00, d3m01, d3m10, d3m11;
 var d4m00, d4m01, d4m10, d4m11;
 
-function LineBuffer()
-{
-    var i;
-    this.time = 0;
-    this.points = [];
-    for (i = 0; i < 500; i++)
-    {
-    	this.points.push(0);
-    }
-    
-    this.addValue = function(value)
-    {
-      this.points[this.time] = value;
-      this.time = (this.time + 1) % this.points.length;
-    }
-}
-
-function LineChart(id, scale, offset)
-{
-    if (scale === undefined) scale = 30;
-    if (offset === undefined) offset = 50;
-    this.scale = scale;
-    this.offset = offset;
-    this.canvas = document.getElementById( id );
-    this.plot = this.canvas.getContext('2d');    
-    this.clear = function()
-    {
-      this.plot.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-    
-    this.stroke = function(points, style)
-    {
-      var i;
-      var xStep = this.canvas.width / points.length;
-      this.plot.beginPath();
-      this.plot.moveTo(xStep, this.offset);
-      for (i = 0; i < points.length; i++)
-      {
-        this.plot.lineTo(xStep * i, this.offset + points[i] * this.scale);
-      }
-      this.plot.strokeStyle = style;
-      this.plot.stroke();
-    }
-}
-
 function Base(geometry, material, planeGeometry, planeMaterial)
 {
     var origin = new THREE.Vector3(0, 0, 0);
@@ -235,25 +190,26 @@ function init() {
     chart4 = new LineChart('plotB1A1', scale);
     
     // data buffers
-    d1m00 = new LineBuffer();
-    d1m01 = new LineBuffer();
-    d1m10 = new LineBuffer();
-    d1m11 = new LineBuffer();
+    var size = 500;
+    d1m00 = new LineBuffer(size);
+    d1m01 = new LineBuffer(size);
+    d1m10 = new LineBuffer(size);
+    d1m11 = new LineBuffer(size);
 
-    d2m00 = new LineBuffer();
-    d2m01 = new LineBuffer();
-    d2m10 = new LineBuffer();
-    d2m11 = new LineBuffer();
+    d2m00 = new LineBuffer(size);
+    d2m01 = new LineBuffer(size);
+    d2m10 = new LineBuffer(size);
+    d2m11 = new LineBuffer(size);
   
-    d3m00 = new LineBuffer();
-    d3m01 = new LineBuffer();
-    d3m10 = new LineBuffer();
-    d3m11 = new LineBuffer();
+    d3m00 = new LineBuffer(size);
+    d3m01 = new LineBuffer(size);
+    d3m10 = new LineBuffer(size);
+    d3m11 = new LineBuffer(size);
     
-    d4m00 = new LineBuffer();
-    d4m01 = new LineBuffer();
-    d4m10 = new LineBuffer();
-    d4m11 = new LineBuffer();
+    d4m00 = new LineBuffer(size);
+    d4m01 = new LineBuffer(size);
+    d4m10 = new LineBuffer(size);
+    d4m11 = new LineBuffer(size);
 }
 
 function animate() {
