@@ -11,6 +11,12 @@ var hitB21, hitB22, hitB23, hitB24;
 var diode1, diode2, diode3, diode4;
 var tracker, angle;
 var pivot, rotationAxis;
+var directionBase1;
+var hitAngleTestX = 0;
+var hitAngleTestY = 0;
+
+var lineMaterial
+var hitLine1;
 
 var chart1, chart2, chart3, chart4;
 var d1m00, d1m01, d1m10, d1m11;
@@ -146,6 +152,10 @@ function init() {
   scene.add(hitB23);
   scene.add(hitB24);
 
+  var lineMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff });
+  directionBase1 = new DirectionLine(lineMaterial);
+  scene.add(directionBase1.line);
+
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -193,6 +203,13 @@ function animate() {
   //var {x, y} = polarToCart(angle, 0.3);
   //diode.position.x = x;
   //diode.position.y = y;
+
+  hitAngleTestX = (hitAngleTestX + 100) % 8333;
+  hitAngleTestY = (hitAngleTestY + 100) % 8333;
+  var hitTest = new SensorHit(hitAngleTestX, hitAngleTestY);
+  hitTest.direction.multiplyScalar(0.2);
+  hitTest.direction.applyMatrix4(base2.mesh.matrixWorld);
+  directionBase1.setVertices(base2.mesh.getWorldPosition(), hitTest.direction);
 
   var diode1position = diode1.getWorldPosition();
   var diode2position = diode2.getWorldPosition();
