@@ -18,31 +18,6 @@ var d2m00, d2m01, d2m10, d2m11;
 var d3m00, d3m01, d3m10, d3m11;
 var d4m00, d4m01, d4m10, d4m11;
 
-function Base(geometry, material, planeGeometry, planeMaterial) {
-  var origin = new THREE.Vector3(0, 0, 0);
-  var forward = new THREE.Vector3(0, 0, 1);
-  var horizontalNormal = new THREE.Vector3(1, 0, 0);
-  var verticalNormal = new THREE.Vector3(0, 1, 0);
-  var normalMatrix = new THREE.Matrix3();
-  this.mesh = new THREE.Mesh(geometry, material);
-  this.horizontalMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-  this.verticalMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-  this.horizontalMesh.material.side = THREE.DoubleSide;
-  this.verticalMesh.material.side = THREE.DoubleSide;
-  this.horizontalPlane = new THREE.Plane(horizontalNormal, 0);
-  this.verticalPlane = new THREE.Plane(verticalNormal, 0);
-  this.forwardLine = new THREE.Line3(origin, forward);
-  this.applyMatrix4 = function (matrix) {
-    normalMatrix.getNormalMatrix(matrix);
-    this.horizontalPlane.applyMatrix4(matrix, normalMatrix);
-    this.verticalPlane.applyMatrix4(matrix, normalMatrix);
-    this.forwardLine.applyMatrix4(matrix);
-    this.mesh.applyMatrix(matrix);
-    this.horizontalMesh.applyMatrix(matrix);
-    this.verticalMesh.applyMatrix(matrix);
-  };
-}
-
 function polarToCart(angle, radius) {
   return {
     x: radius * Math.cos(angle),

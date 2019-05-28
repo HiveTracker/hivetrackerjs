@@ -101,7 +101,7 @@ window.addEventListener('load', () => {
 						byteBuffer[byteIndex++] = element;
 						if (byteIndex >= 10) {
 							packetBuffer.push(byteBuffer);
-							var message = new Message(byteBuffer, checksum);
+							var message = new TrackerMessage(byteBuffer, checksum);
 							var messageIndex = message.base * 2 + message.axis;
 							messageBuffer[messageIndex] = message;
 							byteBuffer = new Uint8Array(new ArrayBuffer(10));
