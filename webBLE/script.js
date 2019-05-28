@@ -1,32 +1,26 @@
-var HT_PACKAGE_MASK = 0x80;
-var HT_BASE_MASK = 0x40;
-var HT_AXIS_MASK = 0x20;
-var HT_CHECKSUM_MASK = 0x0F;
+var chart1 = new LineChart('plotB0A0', -0.05, 200);
+var d1m00, d1m01, d1m10, d1m11;
+var size = 500;
+d1m00 = new LineBuffer(size);
+d1m01 = new LineBuffer(size);
+d1m10 = new LineBuffer(size);
+d1m11 = new LineBuffer(size);
 
-function Message(buffer, checksum) {
-	this.base = buffer[0] & HT_BASE_MASK;
-	this.axis = buffer[0] & HT_AXIS_MASK;
-	this.centroid = [
-		buffer[2] << 8 | buffer[3],
-		buffer[4] << 8 | buffer[5],
-		buffer[6] << 8 | buffer[7],
-		buffer[8] << 8 | buffer[9]];
-	var chk = (buffer[0] & HT_CHECKSUM_MASK) << 4 | (buffer[1] & HT_CHECKSUM_MASK)
-	this.valid = checksum == chk;
-}
+var render = setInterval(function () {
+	chart1.clear();
+    
+    chart1.stroke(d1m00.points, "red");
+    chart1.stroke(d1m01.points, "blue");
+    chart1.stroke(d1m10.points, "magenta");
+    chart1.stroke(d1m11.points, "black");
+}, 100);
 
 window.addEventListener('load', () => {
 	console.log("Hello world");
 
 	var button = document.getElementsByTagName('button')[0];
 	var stop = document.getElementsByTagName('button')[1];
-	var input = document.getElementsByTagName('input')[0];
- 	var output = document.getElementsByTagName('div')[0];
-
-	var txCharacteristic;
-
 	var NORDIC_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-	var NORDIC_TX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 	var NORDIC_RX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
 	var filters = [];
@@ -39,39 +33,9 @@ window.addEventListener('load', () => {
 
 	}
 
-	function openCallback(){
-
-	}
-
 	function receiveCallback(){
 
 	}
-
-	function ab2str(buf) {
-	  return String.fromCharCode.apply(null, new Uint8Array(buf));
-	}
-
-	function str2ab(str) {
-	  var buf = new ArrayBuffer(str.length);
-	  var bufView = new Uint8Array(buf);
-	  for (var i=0, strLen=str.length; i<strLen; i++) {
-	    bufView[i] = str.charCodeAt(i);
-	  }
-	  return buf;
-	}
-
-	input.addEventListener("keyup", function(event) {
-		event.preventDefault();
-		if (event.keyCode === 13) {
-			if (txCharacteristic){
-				console.log("HT> Sending "+ input.value);
-				txCharacteristic.writeValue(str2ab(input.value)).then(function() {
-					console.log("HT> Sent");
-					input.value = "";
-				});
-			}
-		}
-	});
 
 	function concatenate(buf) {
 		return buf.reduce(function (c, x, i) {
@@ -88,6 +52,7 @@ window.addEventListener('load', () => {
 		var byteIndex = 0;
 		var lineBuffer = "";
 		var packetBuffer = [];
+		var messageBuffer = [null, null, null, null];
 		var byteBuffer = new Uint8Array(new ArrayBuffer(10));
 		navigator.bluetooth.requestDevice({
 			filters: filters,
@@ -136,27 +101,30 @@ window.addEventListener('load', () => {
 						byteBuffer[byteIndex++] = element;
 						if (byteIndex >= 10) {
 							packetBuffer.push(byteBuffer);
-							message = new Message(byteBuffer, checksum);
+							var message = new Message(byteBuffer, checksum);
+							var messageIndex = message.base * 2 + message.axis;
+							messageBuffer[messageIndex] = message;
 							byteBuffer = new Uint8Array(new ArrayBuffer(10));
 							byteIndex = 0;
 							checksum = 0;
+							if (message.valid && message.axis == 0 && message.base == 0) {
+								d1m00.addValue(message.centroid[0]);
+								d1m01.addValue(message.centroid[1]);
+								d1m10.addValue(message.centroid[2]);
+								d1m11.addValue(message.centroid[3]);
+							}
 						}
 					}
 
 					receiveCallback({ "timeStamp": event.timeStamp, "value": event.target.value });
 				});
 				return rxCharacteristic.startNotifications();
-			}).then(function() {
-				return btService.getCharacteristic(NORDIC_TX);
-			}).then(function (characteristic) {
-				txCharacteristic = characteristic;
-				console.log("BT> TX characteristic:"+JSON.stringify(txCharacteristic));
-    	}).catch(function(error) {
-    	console.log('BT> ERROR: ' + error);
-    	if (connectionDisconnectCallback) {
-    		connectionDisconnectCallback(undefined);
-    		connectionDisconnectCallback = undefined;
-    	}
-    });
+			}).catch(function(error) {
+				console.log('BT> ERROR: ' + error);
+				if (connectionDisconnectCallback) {
+					connectionDisconnectCallback(undefined);
+					connectionDisconnectCallback = undefined;
+				}
+    		});
 		})
 	})
