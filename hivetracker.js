@@ -5,6 +5,71 @@ var HT_CHECKSUM_MASK = 0x0F;
 var HT_PERIOD = 8333;
 var HT_TICKS_PER_MICROSECOND = 16.0
 
+function TrackerBLE() {
+    var NORDIC_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    var NORDIC_RX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+    var filters = [{ namePrefix: "HT" }];
+    var services = [NORDIC_SERVICE];
+    function TrackerSubscription() {
+        this.device = null;
+        this.unsubscribe = function () {
+            if (this.device !== null) {
+                this.device.gatt.disconnect();
+            }
+        };
+    };
+
+    this.subscribe = function (next, error, complete) {
+        var checksum = 0;
+		var byteIndex = 0;
+        var byteBuffer = new Uint8Array(new ArrayBuffer(10));
+        var subscription = new TrackerSubscription();
+        navigator.bluetooth
+            .requestDevice({ filters: filters, optionalServices: services })
+            .then(function (device) {
+                subscription.device = device;
+                if (typeof complete === 'function') {
+                    device.addEventListener('gattserverdisconnected', complete, { once: true });
+                }
+                return device.gatt.connect();
+            })
+            .then(function (server) { return server.getPrimaryService(NORDIC_SERVICE); })
+            .then(function (service) { return service.getCharacteristic(NORDIC_RX); })
+            .then(function (characteristic) {
+                if (typeof next === 'function') {
+                    characteristic.addEventListener('characteristicvaluechanged', function (event) {
+                        var value = new Uint8Array(event.target.value.buffer);
+                        for (let i = 0; i < value.length; i++) {
+                            const element = value[i];
+                            if (byteIndex < 2) {
+                                if ((element & HT_PACKAGE_MASK) == 0) {
+                                    byteIndex = 0;
+                                    continue;
+                                }
+                            }
+                            else if (byteIndex % 2 != 0) checksum = (checksum + element) % 256;
+                            byteBuffer[byteIndex++] = element;
+                            if (byteIndex >= 10) {
+                                var message = new TrackerMessage(byteBuffer, checksum);
+                                next({ timeStamp: event.timeStamp, message: message });
+                                byteBuffer = new Uint8Array(new ArrayBuffer(10));
+                                byteIndex = 0;
+                                checksum = 0;
+                            }
+                        }
+                    });
+                }
+                return characteristic.startNotifications();
+            })
+            .catch(function (ex) {
+                if (typeof error === 'function') {
+                    error(ex);
+                }
+            });
+        return subscription;
+    };
+}
+
 function TrackerMessage(buffer, checksum) {
     this.base = buffer[0] & HT_BASE_MASK;
     this.axis = buffer[0] & HT_AXIS_MASK;
@@ -15,6 +80,7 @@ function TrackerMessage(buffer, checksum) {
         ((buffer[8] << 8 | buffer[9]) << 2) / HT_TICKS_PER_MICROSECOND];
     var chk = (buffer[0] & HT_CHECKSUM_MASK) << 4 | (buffer[1] & HT_CHECKSUM_MASK)
     this.valid = checksum == chk;
+    this.buffer = buffer;
 }
 
 function TrackerState(messageH, messageV) {
