@@ -71,8 +71,8 @@ function TrackerBLE() {
 }
 
 function TrackerMessage(buffer, checksum) {
-    this.base = buffer[0] & HT_BASE_MASK;
-    this.axis = buffer[0] & HT_AXIS_MASK;
+    this.base = (buffer[0] & HT_BASE_MASK) >> 6;
+    this.axis = (buffer[0] & HT_AXIS_MASK) >> 5;
     this.centroid = [
         ((buffer[2] << 8 | buffer[3]) << 2) / HT_TICKS_PER_MICROSECOND,
         ((buffer[4] << 8 | buffer[5]) << 2) / HT_TICKS_PER_MICROSECOND,
