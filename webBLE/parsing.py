@@ -19,7 +19,7 @@ packet_sizes = df.groupby('packet').count().reset_index()
 packet_sizes.groupby('data').count()
 
 # increase cycle id every time 0x60 shows up and count cycle size in bytes
-cycle = np.cumsum(((df.data & 0x60) == 0x60).astype(int))
+cycle = np.cumsum(((df.packet.diff()) == 1).astype(int))
 cycle.name = 'cycle'
 df = pd.concat([df, cycle], axis=1)
 cycle_sizes = df.groupby('cycle').count().reset_index()
