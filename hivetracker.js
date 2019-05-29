@@ -6,15 +6,15 @@ var HT_PERIOD = 8333;
 var HT_TICKS_PER_MICROSECOND = 16.0
 
 function TrackerMessage(buffer, checksum) {
-	this.base = buffer[0] & HT_BASE_MASK;
-	this.axis = buffer[0] & HT_AXIS_MASK;
-	this.centroid = [
-		((buffer[2] << 8 | buffer[3]) << 2) / HT_TICKS_PER_MICROSECOND,
-		((buffer[4] << 8 | buffer[5]) << 2) / HT_TICKS_PER_MICROSECOND,
-		((buffer[6] << 8 | buffer[7]) << 2) / HT_TICKS_PER_MICROSECOND,
-		((buffer[8] << 8 | buffer[9]) << 2) / HT_TICKS_PER_MICROSECOND];
-	var chk = (buffer[0] & HT_CHECKSUM_MASK) << 4 | (buffer[1] & HT_CHECKSUM_MASK)
-	this.valid = checksum == chk;
+    this.base = buffer[0] & HT_BASE_MASK;
+    this.axis = buffer[0] & HT_AXIS_MASK;
+    this.centroid = [
+        ((buffer[2] << 8 | buffer[3]) << 2) / HT_TICKS_PER_MICROSECOND,
+        ((buffer[4] << 8 | buffer[5]) << 2) / HT_TICKS_PER_MICROSECOND,
+        ((buffer[6] << 8 | buffer[7]) << 2) / HT_TICKS_PER_MICROSECOND,
+        ((buffer[8] << 8 | buffer[9]) << 2) / HT_TICKS_PER_MICROSECOND];
+    var chk = (buffer[0] & HT_CHECKSUM_MASK) << 4 | (buffer[1] & HT_CHECKSUM_MASK)
+    this.valid = checksum == chk;
 }
 
 function TrackerState(messageH, messageV) {
@@ -42,13 +42,13 @@ function TrackerState(messageH, messageV) {
 }
 
 function SensorHit(timeH, timeV) {
-	var angleH = timeH * Math.PI / HT_PERIOD;
-	var angleV = timeV * Math.PI / HT_PERIOD;
-	var horizontal = new THREE.Vector3(-Math.cos(angleH), 0, Math.sin(angleV));
-	var vertical = new THREE.Vector3(0, -Math.cos(angleV), Math.sin(angleV));
-	this.direction = new THREE.Vector3(0, 0, 0);
-	this.direction.addVectors(horizontal, vertical);
-	this.direction.normalize();
+    var angleH = timeH * Math.PI / HT_PERIOD;
+    var angleV = timeV * Math.PI / HT_PERIOD;
+    var horizontal = new THREE.Vector3(-Math.cos(angleH), 0, Math.sin(angleV));
+    var vertical = new THREE.Vector3(0, -Math.cos(angleV), Math.sin(angleV));
+    this.direction = new THREE.Vector3(0, 0, 0);
+    this.direction.addVectors(horizontal, vertical);
+    this.direction.normalize();
 }
 
 function Base(geometry, material, planeGeometry, planeMaterial) {
@@ -66,24 +66,24 @@ function Base(geometry, material, planeGeometry, planeMaterial) {
     this.verticalPlane = new THREE.Plane(verticalNormal, 0);
     this.forwardLine = new THREE.Line3(origin, forward);
     this.applyMatrix4 = function (matrix) {
-      normalMatrix.getNormalMatrix(matrix);
-      this.horizontalPlane.applyMatrix4(matrix, normalMatrix);
-      this.verticalPlane.applyMatrix4(matrix, normalMatrix);
-      this.forwardLine.applyMatrix4(matrix);
-      this.mesh.applyMatrix(matrix);
-      this.horizontalMesh.applyMatrix(matrix);
-      this.verticalMesh.applyMatrix(matrix);
+        normalMatrix.getNormalMatrix(matrix);
+        this.horizontalPlane.applyMatrix4(matrix, normalMatrix);
+        this.verticalPlane.applyMatrix4(matrix, normalMatrix);
+        this.forwardLine.applyMatrix4(matrix);
+        this.mesh.applyMatrix(matrix);
+        this.horizontalMesh.applyMatrix(matrix);
+        this.verticalMesh.applyMatrix(matrix);
     };
-  }
-  
-  function DirectionLine(lineMaterial) {
+}
+
+function DirectionLine(lineMaterial) {
     var lineGeometry = new THREE.Geometry();
     lineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
     lineGeometry.vertices.push(new THREE.Vector3(0, 0, 1));
     this.line = new THREE.Line(lineGeometry, lineMaterial);
     this.setVertices = function (p0, p1) {
-      this.line.geometry.vertices[0] = p0;
-      this.line.geometry.vertices[1] = p1;
-      this.line.geometry.verticesNeedUpdate = true;
+        this.line.geometry.vertices[0] = p0;
+        this.line.geometry.vertices[1] = p1;
+        this.line.geometry.verticesNeedUpdate = true;
     };
-  }
+}
