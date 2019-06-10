@@ -2,22 +2,22 @@ var camera, scene, renderer, controls;
 var plane, sphere, material;
 var base1, base2, directionLine;
 
-init();
-animate();
-
 var tracker, subscription, state;
 var messageBuffer = [null, null, null, null];
 
+init();
+animate();
+
 function initTracker() {
   var button = document.getElementsByTagName('button')[0];
-	var stop = document.getElementsByTagName('button')[1];
+  var stop = document.getElementsByTagName('button')[1];
   button.addEventListener('click', () => {
     tracker = new TrackerBLE();
     subscription = tracker.subscribe(evt => {
       var message = evt.message;
       var messageIndex = message.base * 2 + message.axis;
       messageBuffer[messageIndex] = message;
-      if (messageIndex % 2 != 0) {
+      if (message.base == 0 && message.axis == 1) {
         var messageH = messageBuffer[messageIndex - 1];
         var messageV = messageBuffer[messageIndex];
         if (messageH !== null && messageH.valid && messageV.valid) {
@@ -34,16 +34,9 @@ function initTracker() {
 
 function init() {
 
+  scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
   camera.position.z = 1;
-
-  // controls
-  controls = new THREE.OrbitControls(camera);
-  controls.rotateSpeed = 1.0;
-  controls.zoomSpeed = 1.2;
-  controls.panSpeed = 0.8;
-
-  scene = new THREE.Scene();
 
   var material = new THREE.MeshNormalMaterial();
   var redPlaneMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.1 });
@@ -84,6 +77,12 @@ function init() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
 
+  // controls
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.rotateSpeed = 1.0;
+  controls.zoomSpeed = 1.2;
+  controls.panSpeed = 0.8;
+
   var container = document.getElementById('canvas');
   container.appendChild(renderer.domElement);
 
@@ -95,10 +94,10 @@ function animate() {
   controls.update();
 
   if (state !== undefined) {
-    var hitTest = state.hits[0];
-    hitTest.direction.multiplyScalar(0.2);
-    hitTest.direction.applyMatrix4(base2.mesh.matrixWorld);
-    directionLine.setVertices(base2.mesh.getWorldPosition(), hitTest.direction);
+    var direction = state.hits[0].direction.clone();
+    direction.multiplyScalar(0.2);
+    direction.applyMatrix4(base2.mesh.matrixWorld);
+    directionLine.setVertices(base2.mesh.getWorldPosition(), direction);
   }
 
   renderer.render(scene, camera);

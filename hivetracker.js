@@ -3,7 +3,7 @@ var HT_BASE_MASK = 0x40;
 var HT_AXIS_MASK = 0x20;
 var HT_CHECKSUM_MASK = 0x0F;
 var HT_PERIOD = 8333;
-var HT_TICKS_PER_MICROSECOND = 16.0
+var HT_TICKS_PER_MICROSECOND = 16
 
 function TrackerBLE() {
     var NORDIC_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -110,10 +110,10 @@ function TrackerState(messageH, messageV) {
 function SensorHit(timeH, timeV) {
     var angleH = timeH * Math.PI / HT_PERIOD;
     var angleV = timeV * Math.PI / HT_PERIOD;
-    var horizontal = new THREE.Vector3(-Math.cos(angleH), 0, Math.sin(angleV));
-    var vertical = new THREE.Vector3(0, -Math.cos(angleV), Math.sin(angleV));
-    this.direction = new THREE.Vector3(0, 0, 0);
-    this.direction.addVectors(horizontal, vertical);
+    this.direction = new THREE.Vector3(
+        Math.sin(angleV) * Math.cos(angleH),
+        Math.cos(angleV),
+        Math.sin(angleV) * Math.sin(angleH));
     this.direction.normalize();
 }
 
