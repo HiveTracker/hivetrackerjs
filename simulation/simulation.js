@@ -204,13 +204,6 @@ function animate() {
   //diode.position.x = x;
   //diode.position.y = y;
 
-  hitAngleTestX = (hitAngleTestX + 100) % 8333;
-  hitAngleTestY = (hitAngleTestY + 100) % 8333;
-  var hitTest = new SensorHit(hitAngleTestX, hitAngleTestY);
-  hitTest.direction.multiplyScalar(0.2);
-  hitTest.direction.applyMatrix4(base2.mesh.matrixWorld);
-  directionBase1.setVertices(base2.mesh.getWorldPosition(), hitTest.direction);
-
   var diode1position = diode1.getWorldPosition();
   var diode2position = diode2.getWorldPosition();
   var diode3position = diode3.getWorldPosition();
@@ -229,6 +222,14 @@ function animate() {
   base2.horizontalPlane.projectPoint(diode3position, hitB23.position);
   base2.horizontalPlane.projectPoint(diode4position, hitB24.position);
   renderer.render(scene, camera);
+
+  hitAngleTestX = (data1.b0a0 + Math.PI / 2) * HT_PERIOD / Math.PI;
+  hitAngleTestY = (data1.b0a1 + Math.PI / 2) * HT_PERIOD / Math.PI;
+  var hitTest = new SensorHit(hitAngleTestX, hitAngleTestY);
+  hitTest.direction.multiplyScalar(-1.0);
+  hitTest.direction.z *= -1;
+  hitTest.direction.applyMatrix4(base1.mesh.matrixWorld);
+  directionBase1.setVertices(base1.mesh.getWorldPosition(), hitTest.direction);
 
   d1m00.addValue(data1.b0a0);
   d1m01.addValue(data1.b0a1);
