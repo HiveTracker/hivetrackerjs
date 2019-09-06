@@ -108,12 +108,12 @@ function TrackerState(messageH, messageV) {
 }
 
 function SensorHit(timeH, timeV) {
-    var angleH = timeH * Math.PI / HT_PERIOD;
+    var angleH = timeH * Math.PI / HT_PERIOD - Math.PI / 2;
     var angleV = timeV * Math.PI / HT_PERIOD;
     this.direction = new THREE.Vector3(
-        Math.sin(angleV) * Math.cos(angleH),
+        Math.sin(angleV) * Math.sin(angleH),
         Math.cos(angleV),
-        Math.sin(angleV) * Math.sin(angleH));
+        Math.sin(angleV) * Math.cos(angleH));
     this.direction.normalize();
 }
 

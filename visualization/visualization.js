@@ -80,24 +80,28 @@ function init() {
   var bluePlaneMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.1 });
   var plane = new THREE.PlaneBufferGeometry(2, 1, 1);
   plane.rotateY(THREE.Math.degToRad(90));
-  plane.translate(0, 0, 1);
+  plane.translate(0, 0, -1);
   sphere = new THREE.SphereGeometry(0.1);
   box = new THREE.BoxBufferGeometry(0.1, 0.1, 0.1);
 
   base1 = new Base(box, material, plane, redPlaneMaterial);
   var transform1 = new THREE.Matrix4();
-  var position1 = new THREE.Vector3(0.6, 0.4, -0.4);
-  var center1 = new THREE.Vector3(0, 0, 0);
-  transform1.setPosition(position1);
-  transform1.lookAt(center1, position1, base1.mesh.up);
+  transform1.set(
+    -0.5283118, -0.1285292, 0.8392657, 0,
+    0.3147103, 0.8884206, 0.3341649, 0,
+    -0.7885709, 0.4406688, -0.4289137, 0,
+    -2.088987, 2.483953, -0.7352041, 1);
+  transform1.transpose();
   base1.applyMatrix4(transform1);
 
   base2 = new Base(box, material, plane, bluePlaneMaterial);
   var transform2 = new THREE.Matrix4();
-  var position2 = new THREE.Vector3(-0.6, 0.4, -0.4);
-  var center2 = new THREE.Vector3(0, 0, 0);
-  transform2.setPosition(position2);
-  transform2.lookAt(center2, position2, base2.mesh.up);
+  transform2.set(
+    -0.05143319, -0.02879849, 0.998261, 0,
+    0.5376514, -0.8431603, 0.003377263, 0,
+    0.841597, 0.5368903, 0.05884998, 0,
+    2.705675, 2.303431, 0.376483, 1);
+  transform2.transpose();
   base2.applyMatrix4(transform2);
 
   scene.add(base1.mesh);
@@ -132,9 +136,9 @@ function animate() {
 
   if (state !== undefined) {
     var direction = state.hits[0].direction.clone();
-    direction.multiplyScalar(0.2);
-    direction.applyMatrix4(base2.mesh.matrixWorld);
-    directionLine.setVertices(base2.mesh.getWorldPosition(), direction);
+    direction.multiplyScalar(-0.2);
+    direction.applyMatrix4(base1.mesh.matrixWorld);
+    directionLine.setVertices(base1.mesh.getWorldPosition(), direction);
   }
 
   renderer.render(scene, camera);
