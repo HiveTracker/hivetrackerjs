@@ -2,7 +2,7 @@ var camera, scene, renderer, controls;
 var plane, sphere, material;
 var base1, base2, directionLine;
 
-var tracker, subscription, state;
+var tracker, subscription, state1, state2;
 var messageBuffer = [null, null, null, null];
 
 init();
@@ -11,6 +11,43 @@ animate();
 function initTracker() {
   var button = document.getElementsByTagName('button')[0];
   var stop = document.getElementsByTagName('button')[1];
+
+  var angleH = document.getElementsByTagName('input')[0];
+  var angleV = document.getElementsByTagName('input')[1];
+  messageBuffer[0] = { base: 0, axis: 0, centroid: [angleH.value, 0, 0, 0], valid: true };
+  messageBuffer[1] = { base: 0, axis: 1, centroid: [angleV.value, 0, 0, 0], valid: true };
+  state = new TrackerState(messageBuffer[0], messageBuffer[1]);
+
+  angleH.oninput = function () {
+    var messageH =
+    {
+      base: 0,
+      axis: 0,
+      centroid: [angleH.value, 0, 0, 0],
+      valid: true
+    };
+    messageBuffer[0] = messageH;
+    var messageV = messageBuffer[1];
+    if (messageV !== null && messageH.valid && messageV.valid) {
+      state = new TrackerState(messageH, messageV);
+    }
+  };
+
+  angleV.oninput = function () {
+    var messageV =
+    {
+      base: 0,
+      axis: 1,
+      centroid: [angleV.value, 0, 0, 0],
+      valid: true
+    };
+    messageBuffer[1] = messageV;
+    var messageH = messageBuffer[0];
+    if (messageH !== null && messageH.valid && messageV.valid) {
+      state = new TrackerState(messageH, messageV);
+    }
+  };
+
   button.addEventListener('click', () => {
     tracker = new TrackerBLE();
     subscription = tracker.subscribe(evt => {
