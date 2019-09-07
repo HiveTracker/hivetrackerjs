@@ -117,6 +117,50 @@ function SensorHit(timeH, timeV) {
     this.direction.normalize();
 }
 
+function SensorIntersection(hitA, matrixA, hitB, matrixB) {
+    var u = hitA.direction.clone();
+    var v = hitB.direction.clone();
+    var p0 = new THREE.Vector3();
+    var q0 = new THREE.Vector3();
+
+    // get origin of vector
+    p0.applyMatrix4(matrixA);
+    q0.applyMatrix4(matrixB);
+
+    // get endpoint of vector
+    u.multiplyScalar(-1);
+    v.multiplyScalar(-1);
+    u.applyMatrix4(matrixA);
+    v.applyMatrix4(matrixB);
+    
+    // new direction vector is endpoint - origin
+    u.sub(p0);
+    v.sub(q0);
+
+    // line-line intersection algorithm
+    var w0 = p0.clone();
+    w0.sub(q0);
+    var a = u.dot(u);
+    var b = u.dot(v);
+    var c = v.dot(v);
+    var d = u.dot(w0);
+    var e = v.dot(w0);
+    var denom = a * c - b * b;
+    if (denom >= 1e-6) {
+        var s = (e * b - c * d) / denom;
+        var t = (a * e - b * d) / denom;
+        u.multiplyScalar(s);
+        u.add(p0);
+        v.multiplyScalar(t);
+        v.add(q0);
+
+        // average of both projections
+        u.add(v);
+        u.multiplyScalar(0.5);
+        this.point = u;
+    }
+}
+
 function Base(geometry, material, planeGeometry, planeMaterial) {
     var origin = new THREE.Vector3(0, 0, 0);
     var forward = new THREE.Vector3(0, 0, 1);
