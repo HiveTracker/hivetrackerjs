@@ -19,16 +19,16 @@ function initTracker() {
       var messageIndex = message.base * 2 + message.axis;
       messageBuffer[messageIndex] = message;
       if (message.base == 0 && message.axis == 1) {
-        var messageH = messageBuffer[messageIndex - 1];
-        var messageV = messageBuffer[messageIndex];
+        var messageH = messageBuffer[messageIndex];
+        var messageV = messageBuffer[messageIndex - 1];
         if (messageH !== null && messageH.valid && messageV.valid) {
           state2 = new TrackerState(messageH, messageV);
         }
       }
 
       if (message.base == 1 && message.axis == 1) {
-        var messageH = messageBuffer[messageIndex - 1];
-        var messageV = messageBuffer[messageIndex];
+        var messageH = messageBuffer[messageIndex];
+        var messageV = messageBuffer[messageIndex - 1];
         if (messageH !== null && messageH.valid && messageV.valid) {
           state1 = new TrackerState(messageH, messageV);
         }
