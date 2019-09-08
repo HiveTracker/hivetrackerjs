@@ -22,7 +22,7 @@ function initTracker() {
         var messageH = messageBuffer[messageIndex - 1];
         var messageV = messageBuffer[messageIndex];
         if (messageH !== null && messageH.valid && messageV.valid) {
-          state1 = new TrackerState(messageH, messageV);
+          state2 = new TrackerState(messageH, messageV);
         }
       }
 
@@ -30,7 +30,7 @@ function initTracker() {
         var messageH = messageBuffer[messageIndex - 1];
         var messageV = messageBuffer[messageIndex];
         if (messageH !== null && messageH.valid && messageV.valid) {
-          state2 = new TrackerState(messageH, messageV);
+          state1 = new TrackerState(messageH, messageV);
         }
       }
       console.log(messageIndex, " ", messageBuffer)
