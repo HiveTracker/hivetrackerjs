@@ -173,21 +173,22 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
 
-  if (state1 !== undefined) {
+  if (state1 !== undefined && state1.isValid(0)) {
     var direction = state1.hits[0].direction.clone();
     direction.multiplyScalar(-4);
     direction.applyMatrix4(base1.mesh.matrixWorld);
     directionLine1.setVertices(base1.mesh.getWorldPosition(), direction);
   }
 
-  if (state2 !== undefined) {
+  if (state2 !== undefined && state2.isValid(0)) {
     var direction = state2.hits[0].direction.clone();
     direction.multiplyScalar(-4);
     direction.applyMatrix4(base2.mesh.matrixWorld);
     directionLine2.setVertices(base2.mesh.getWorldPosition(), direction);
   }
 
-  if (state1 !== undefined && state2 !== undefined) {
+  if (state1 !== undefined && state2 !== undefined &&
+      state1.isValid(0) && state2.isValid(0)) {
     var hit1 = state1.hits[0];
     var hit2 = state2.hits[0];
     var intersection = new SensorIntersection(

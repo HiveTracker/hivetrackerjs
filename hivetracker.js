@@ -107,7 +107,7 @@ function TrackerState(messageH, messageV) {
     };
 
     this.isValid = function (id) {
-        return this.hits[id].centroid != 0 && this.hits[id].centroid != 0;
+        return messageH.centroid[id] != 0 && messageV.centroid[id] != 0;
     };
 }
 
