@@ -105,6 +105,10 @@ function TrackerState(messageH, messageV) {
         this.hits[2].direction.applyMatrix4(matrix);
         this.hits[3].direction.applyMatrix4(matrix);
     };
+
+    this.isValid = function (id) {
+        return this.hits[id].centroid != 0 && this.hits[id].centroid != 0;
+    };
 }
 
 function SensorHit(timeH, timeV) {
