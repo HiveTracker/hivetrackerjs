@@ -12,6 +12,34 @@ animate();
 function initTracker() {
   var button = document.getElementsByTagName('button')[0];
   var stop = document.getElementsByTagName('button')[1];
+  button.addEventListener('click', () => {
+    tracker = new TrackerBLE();
+    subscription = tracker.subscribe(evt => {
+      var message = evt.message;
+      var messageIndex = message.base * 2 + message.axis;
+      messageBuffer[messageIndex] = message;
+      if (message.base == 0 && message.axis == 1) {
+        var messageH = messageBuffer[messageIndex - 1];
+        var messageV = messageBuffer[messageIndex];
+        if (messageH !== null && messageH.valid && messageV.valid) {
+          state1 = new TrackerState(messageH, messageV);
+        }
+      }
+
+      if (message.base == 1 && message.axis == 1) {
+        var messageH = messageBuffer[messageIndex - 1];
+        var messageV = messageBuffer[messageIndex];
+        if (messageH !== null && messageH.valid && messageV.valid) {
+          state2 = new TrackerState(messageH, messageV);
+        }
+      }
+      console.log(messageIndex, " ", messageBuffer)
+    });
+
+    stop.addEventListener('click', () => {
+			subscription.unsubscribe();
+		}, { once: true });
+  });
 
   var angleH = document.getElementsByTagName('input')[0];
   var angleV = document.getElementsByTagName('input')[1];
