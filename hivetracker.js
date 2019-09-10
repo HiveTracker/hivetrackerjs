@@ -114,6 +114,23 @@ function TrackerState(messageH, messageV) {
         return this.isValid(0) || this.isValid(1) ||
                this.isValid(2) || this.isValid(3);
     };
+
+    this.averageDirection = function () {
+        var aveDir = new THREE.Vector3();
+
+        if (this.hasSomeValids()) {
+            var validCpt = 0;
+
+            for (var i = 0; i < 4; i++) {
+                if (this.isValid(i)) {
+                    aveDir.add(this.hits[i].direction);
+                    validCpt++;
+                }
+            }
+            aveDir.multiplyScalar(1/validCpt);
+        }
+        return aveDir;
+    }
 }
 
 function SensorHit(timeH, timeV) {
