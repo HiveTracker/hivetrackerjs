@@ -143,9 +143,9 @@ function SensorHit(timeH, timeV) {
     this.direction.normalize();
 }
 
-function SensorIntersection(hitA, matrixA, hitB, matrixB) {
-    var u = hitA.direction.clone();
-    var v = hitB.direction.clone();
+function SensorIntersection(directionA, matrixA, directionB, matrixB) {
+    var u = directionA.clone();
+    var v = directionB.clone();
     var p0 = new THREE.Vector3();
     var q0 = new THREE.Vector3();
 
