@@ -175,27 +175,31 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
 
-  if (state1 !== undefined && state1.isValid(0)) {
-    var direction = state1.hits[0].direction.clone();
-    direction.multiplyScalar(-4);
-    direction.applyMatrix4(base1.mesh.matrixWorld);
-    directionLine1.setVertices(base1.mesh.getWorldPosition(), direction);
+  var state1isOk =  state1 !== undefined  &&  state1.hasSomeValids();
+  var state2isOk =  state2 !== undefined  &&  state2.hasSomeValids();
+
+  var aveDir1 = new THREE.Vector3();
+  var aveDir2 = new THREE.Vector3();
+
+  if (state1isOk) {
+    aveDir1 = state1.averageDirection();
+    aveDir1.multiplyScalar(-30);
+    aveDir1.applyMatrix4(base1.mesh.matrixWorld);
+    directionLine1.setVertices(base1.mesh.getWorldPosition(), aveDir1);
   }
 
-  if (state2 !== undefined && state2.isValid(0)) {
-    var direction = state2.hits[0].direction.clone();
-    direction.multiplyScalar(-4);
-    direction.applyMatrix4(base2.mesh.matrixWorld);
-    directionLine2.setVertices(base2.mesh.getWorldPosition(), direction);
+  if (state2isOk) {
+    aveDir2 = state2.averageDirection();
+    aveDir2.multiplyScalar(-30);
+    aveDir2.applyMatrix4(base2.mesh.matrixWorld);
+    directionLine2.setVertices(base2.mesh.getWorldPosition(), aveDir2);
   }
 
-  if (state1 !== undefined && state2 !== undefined &&
-      state1.isValid(0) && state2.isValid(0)) {
-    var hit1 = state1.hits[0];
-    var hit2 = state2.hits[0];
+  if (state2isOk && state2isOk) {
     var intersection = new SensorIntersection(
-      hit1, transform1,
-      hit2, transform2);
+      aveDir1, transform1,
+      aveDir2, transform2);
+
     if (intersection.point !== undefined) {
       triangulation.position.copy(intersection.point);
     }
