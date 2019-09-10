@@ -116,27 +116,29 @@ function initTracker() {
 function init() {
 
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+  camera.position.x = 1.7;
+  camera.position.y = 1;
   camera.position.z = 1;
 
   var material = new THREE.MeshNormalMaterial();
-  var redMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
   var redPlaneMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.1 });
-  var bluePlaneMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.1 });
+  var bluePlaneMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.1 });
   var plane = new THREE.PlaneBufferGeometry(2, 1, 1);
   plane.rotateY(THREE.Math.degToRad(90));
   plane.translate(0, 0, -1);
-  sphere = new THREE.SphereGeometry(0.01);
+  sphere = new THREE.SphereGeometry(0.05);
   box = new THREE.BoxBufferGeometry(0.1, 0.1, 0.1);
 
-  triangulation = new THREE.Mesh(sphere, redMaterial);
+  triangulation = new THREE.Mesh(sphere, sphereMaterial);
   scene.add(triangulation);
 
   loadcalibration();
-  base1 = new Base(box, material, plane, redPlaneMaterial);
+  base1 = new Base(box, material, plane, bluePlaneMaterial);
   base1.applyMatrix4(transform1);
 
-  base2 = new Base(box, material, plane, bluePlaneMaterial);
+  base2 = new Base(box, material, plane, redPlaneMaterial);
   base2.applyMatrix4(transform2);
 
   scene.add(base1.mesh);
@@ -146,7 +148,7 @@ function init() {
   scene.add(base2.horizontalMesh);
   scene.add(base2.verticalMesh);
 
-  var lineMaterial1 = new THREE.LineBasicMaterial({ color: 0x0000ff });
+  var lineMaterial1 = new THREE.LineBasicMaterial({ color: 0x00ffff });
   directionLine1 = new DirectionLine(lineMaterial1);
   scene.add(directionLine1.line);
 
@@ -160,7 +162,7 @@ function init() {
   // controls
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.rotateSpeed = 1.0;
-  controls.zoomSpeed = 1.2;
+  controls.zoomSpeed = 1.0;
   controls.panSpeed = 0.8;
 
   var container = document.getElementById('canvas');
