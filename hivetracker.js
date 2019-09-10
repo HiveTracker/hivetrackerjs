@@ -109,6 +109,11 @@ function TrackerState(messageH, messageV) {
     this.isValid = function (id) {
         return messageH.centroid[id] != 0 && messageV.centroid[id] != 0;
     };
+
+    this.hasSomeValids = function () {
+        return this.isValid(0) || this.isValid(1) ||
+               this.isValid(2) || this.isValid(3);
+    };
 }
 
 function SensorHit(timeH, timeV) {
