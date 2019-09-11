@@ -116,10 +116,10 @@ function initTracker() {
 function init() {
 
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-  camera.position.x = 1.7;
-  camera.position.y = 1;
-  camera.position.z = 1;
+  camera = new THREE.PerspectiveCamera(15, window.innerWidth / window.innerHeight, 1, 100);
+
+  camera.position.y = 10;
+  camera.position.z = -10;
 
   var material = new THREE.MeshNormalMaterial();
   var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -177,14 +177,14 @@ function animate() {
 
   if (state1 !== undefined && state1.isValid(0)) {
     var direction = state1.hits[0].direction.clone();
-    direction.multiplyScalar(-4);
+    direction.multiplyScalar(-0.5);
     direction.applyMatrix4(base1.mesh.matrixWorld);
     directionLine1.setVertices(base1.mesh.getWorldPosition(), direction);
   }
 
   if (state2 !== undefined && state2.isValid(0)) {
     var direction = state2.hits[0].direction.clone();
-    direction.multiplyScalar(-4);
+    direction.multiplyScalar(-0.5);
     direction.applyMatrix4(base2.mesh.matrixWorld);
     directionLine2.setVertices(base2.mesh.getWorldPosition(), direction);
   }
