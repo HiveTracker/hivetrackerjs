@@ -98,6 +98,30 @@ function TrackerState(messageH, messageV) {
         new SensorHit(messageH.centroid[1], messageV.centroid[1]),
         new SensorHit(messageH.centroid[2], messageV.centroid[2]),
         new SensorHit(messageH.centroid[3], messageV.centroid[3])];
+
+    this.averageHit = function () {
+        var angleH = 0;
+        var angleV = 0;
+        var validCpt = 0;
+
+        for (var i = 0; i < 4; i++) {
+            if (this.isValid(i)) {
+                angleH += this.hits[i].angleH;
+                angleV += this.hits[i].angleV;
+                console.log(angleH);
+                console.log(angleV);
+                validCpt++;
+            }
+        }
+
+        if (validCpt > 0) {
+            angleH /= validCpt;
+            angleV /= validCpt;
+        }
+
+        return new SensorHit(angleH, angleV);
+    }
+
     this.base = messageH.base;
     this.applyMatrix4 = function (matrix) {
         this.hits[0].direction.applyMatrix4(matrix);
@@ -114,23 +138,6 @@ function TrackerState(messageH, messageV) {
         return this.isValid(0) || this.isValid(1) ||
                this.isValid(2) || this.isValid(3);
     };
-
-    this.averageDirection = function () {
-        var aveDir = new THREE.Vector3();
-
-        if (this.hasSomeValids()) {
-            var validCpt = 0;
-
-            for (var i = 0; i < 4; i++) {
-                if (this.isValid(i)) {
-                    aveDir.add(this.hits[i].direction);
-                    validCpt++;
-                }
-            }
-            aveDir.multiplyScalar(1/validCpt);
-        }
-        return aveDir;
-    }
 }
 
 function SensorHit(timeH, timeV) {

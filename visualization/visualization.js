@@ -45,10 +45,10 @@ function initTracker() {
   var angleV = document.getElementsByTagName('input')[1];
   var angleH2 = document.getElementsByTagName('input')[2];
   var angleV2 = document.getElementsByTagName('input')[3];
-  messageBuffer[0] = { base: 0, axis: 0, centroid: [angleH.value, 0, 0, 0], valid: true };
-  messageBuffer[1] = { base: 0, axis: 1, centroid: [angleV.value, 0, 0, 0], valid: true };
-  messageBuffer[2] = { base: 1, axis: 0, centroid: [angleH2.value, 0, 0, 0], valid: true };
-  messageBuffer[3] = { base: 1, axis: 1, centroid: [angleV2.value, 0, 0, 0], valid: true };
+  messageBuffer[0] = { base: 0, axis: 0, centroid: [angleH.value,  angleH.value,  angleH.value,  angleH.value], valid: true };
+  messageBuffer[1] = { base: 0, axis: 1, centroid: [angleV.value,  angleV.value,  angleV.value,  angleV.value], valid: true };
+  messageBuffer[2] = { base: 1, axis: 0, centroid: [angleH2.value, angleH2.value, angleH2.value, angleH2.value], valid: true };
+  messageBuffer[3] = { base: 1, axis: 1, centroid: [angleV2.value, angleV2.value, angleV2.value, angleV2.value], valid: true };
   state1 = new TrackerState(messageBuffer[0], messageBuffer[1]);
   state2 = new TrackerState(messageBuffer[2], messageBuffer[3]);
 
@@ -182,21 +182,21 @@ function animate() {
   var aveDir2 = new THREE.Vector3();
 
   if (state1isOk) {
-    aveDir1 = state1.averageDirection();
+    aveDir1 = state1.averageHit().direction;
     aveDir1.multiplyScalar(-30);
     aveDir1.applyMatrix4(base1.mesh.matrixWorld);
     directionLine1.setVertices(base1.mesh.getWorldPosition(), aveDir1);
   }
 
   if (state2isOk) {
-    aveDir2 = state2.averageDirection();
+    aveDir2 = state2.averageHit().direction;
     aveDir2.multiplyScalar(-30);
     aveDir2.applyMatrix4(base2.mesh.matrixWorld);
     directionLine2.setVertices(base2.mesh.getWorldPosition(), aveDir2);
   }
 
   if (state2isOk && state2isOk) {
-    var intersection = new SensorIntersection(
+    var intersection = new SensorIntersection( // TODO
       aveDir1, transform1,
       aveDir2, transform2);
 
@@ -204,6 +204,27 @@ function animate() {
       triangulation.position.copy(intersection.point);
     }
   }
+/*
+  if (state2isOk && state2isOk) {
+    aveDir1 = state1.averageHit().direction;
+    aveDir1.multiplyScalar(-30);
+    aveDir1.applyMatrix4(base1.mesh.matrixWorld);
+    directionLine1.setVertices(base1.mesh.getWorldPosition(), aveDir1);
+
+    aveDir2 = state2.averageHit().direction;
+    aveDir2.multiplyScalar(-30);
+    aveDir2.applyMatrix4(base2.mesh.matrixWorld);
+    directionLine2.setVertices(base2.mesh.getWorldPosition(), aveDir2);
+
+    var intersection = new SensorIntersection( // TODO
+      aveDir1, transform1,
+      aveDir2, transform2);
+
+    if (intersection.point !== undefined) {
+      triangulation.position.copy(intersection.point);
+    }
+  }
+*/
 
   renderer.render(scene, camera);
 }
