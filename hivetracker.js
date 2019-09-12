@@ -79,7 +79,15 @@ function TrackerMessage(buffer, checksum) {
         ((buffer[6] << 8 | buffer[7]) << 2) / HT_TICKS_PER_MICROSECOND,
         ((buffer[8] << 8 | buffer[9]) << 2) / HT_TICKS_PER_MICROSECOND];
     var chk = (buffer[0] & HT_CHECKSUM_MASK) << 4 | (buffer[1] & HT_CHECKSUM_MASK)
+/* TODO: TO TEST!
     this.valid = checksum == chk;
+    let invalidCpt = 0;
+    for (let i = 0; i < 4; i++)
+        if (this.centroid[i] == 0)
+            invalidCpt++;
+    if (invalidCpt > 3)
+        this.valid = false;
+*/
     this.buffer = buffer;
 }
 
@@ -165,7 +173,7 @@ function SensorIntersection(directionA, matrixA, directionB, matrixB) {
     v.multiplyScalar(-1);
     u.applyMatrix4(matrixA);
     v.applyMatrix4(matrixB);
-    
+
     // new direction vector is endpoint - origin
     u.sub(p0);
     v.sub(q0);
