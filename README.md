@@ -59,5 +59,5 @@ https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-
 
 If everything works, you should be able to see a counter once connected to your BLE device with this interface:
 
-https://hivetracker.github.io/hivetrackerjs/webBLE
+https://hivetracker.github.io/hivetrackerjs/visualization
 
