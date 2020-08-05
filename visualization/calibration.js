@@ -1,3 +1,6 @@
+// This file was automatically generated with the following steps:
+// https://github.com/HiveTracker/bonsai-interface/tree/calibration#install
+
 var transform1, transform2;
 
 function loadcalibration() {
